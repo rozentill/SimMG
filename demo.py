@@ -29,7 +29,28 @@ def func(x):
     y = np.sin(2*np.pi*x)*(4*np.pi**2+1)
     return y
 
-def iterate_solve_Jacobian(A, f, N, max_iter=5000):
+def iterate_solve_GaussSeidel(A, f, N, max_iter=500):
+
+    iteration = max_iter
+    
+    L = np.tril(A, -1)
+    U = np.triu(A, 1)
+    
+    D = np.diag(np.diag(A))
+    R = np.linalg.inv(D+L).dot(-U)
+
+    v_init = [0 for i in range(N-1)]
+    v_init = np.expand_dims(v_init, 1)
+    v_prev = v_init
+
+    for i in range(iteration):
+
+        v_curr = R.dot(v_prev) + np.linalg.inv(D+L).dot(f)
+        v_prev = v_curr
+
+    return v_curr
+
+def iterate_solve_Jacobian(A, f, N, max_iter=500):
 
     iteration = max_iter
     
@@ -66,7 +87,7 @@ def demo():
     f = np.expand_dims(f, 1)
 
     u = direct_solve(A, f)
-    u = iterate_solve_Jacobian(A, f, N)
+    u = iterate_solve_GaussSeidel(A, f, N)
 
     plt.plot(f/(4*np.pi**2+1), label="exact solution")#u_true
     plt.plot(u, label="approximate solution")
