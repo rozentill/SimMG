@@ -184,7 +184,10 @@ def direct_solve(A, f):
     return np.linalg.inv(A).dot(f)
 
 def demo():
-    for n in range(4):
+    
+
+    for n in range(3, 4):
+        
         N = 2**(n+4)
         h = 1./N
         
@@ -194,9 +197,13 @@ def demo():
         f = np.expand_dims(f, 1)
 
         u_true = np.array([exact_solution((i+1)*h) for i in range(N-1)])
-        u, e = iterate_solve_multigrid(A, f, N, u_true)
 
-        plt.plot(e)
+        # u = direct_solve(A, f)
+        # u, e = iterate_solve_GaussSeidel(A, f, N, u_true)
+        u, e = iterate_solve_multigrid(A, f, N, u_true)
+        plt.plot(u)
+        plt.plot(u_true)
+
     plt.legend()
     plt.show()
 
